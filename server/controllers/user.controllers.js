@@ -50,12 +50,15 @@ const login = async (req, res) => {
       return res.status(400).json({ message: "Invalid Username or Password" });
     }
     ValidateCookies(user._id, res);
-    res.status(200).json({
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      username: user.username,
-    });
+    res
+      .setHeader("Access-Control-Allow-Headers", "Set-Cookie")
+      .status(200)
+      .json({
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        username: user.username,
+      });
   } catch (error) {
     res.status(500), json({ message: error.message });
     console.log(error.message);
@@ -147,11 +150,22 @@ const updateUser = async (req,res)=>{
     console.error("Error in updatingUser:", err);
   }
 }
-
+const getProfile = async (req, res) => {
+  try {
+    const user = req.user;
+    if (!user) return res.status(404).json({ message: "User not found" });
+    res.status(200).json(user);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+    console.log("Error in getProfile: ", err.message);
+  }
+}
 const getUserProfile = async (req, res) => {
 	const { username } = req.params;
-	try {
-		const user = await User.findOne({ username }).select("-password").select("-updatedAt");
+  try {
+    const user = await User.findOne({ username })
+        .select("-password")
+        .select("-updatedAt");
 		if (!user) return res.status(404).json({ message: "User not found" });
 
 		res.status(200).json(user);
@@ -167,5 +181,6 @@ module.exports = {
   logout,
   followUnfollowUser,
   updateUser,
-  getUserProfile
+  getUserProfile,
+  getProfile
 };
