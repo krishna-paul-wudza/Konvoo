@@ -1,5 +1,6 @@
 const express = require('express')
 const app = express();
+// const methodOverride = require("method-override");
 const cors = require("cors");
 require("dotenv").config();
 const connectDb = require("./config/db");
@@ -12,6 +13,8 @@ const uploadRoutes = require('./routes/upload.routes');
 const PORT = process.env.PORT
 connectDb();
 app.use(express.json());
+// app.use(methodOverride("_method"));
+app.use('/uploads', express.static("uploads"));
 app.use(express.urlencoded({extended:true}));
 app.use(cookieParser());
 

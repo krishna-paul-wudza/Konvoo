@@ -1,10 +1,20 @@
+const upload = require("../middlewares/upload");
 const Post = require("../models/post.model");
 const User = require("../models/user.model");
-
+const ImageFile = require("../models/image.model");
+const url = require('url')
 const createPost = async (req, res) => {
   try {
-    const { text, img } = req.body;
+    const { text } = req.body;
     const postedBy = req.user._id;
+    const file = new ImageFile({
+      fileName: req.file.originalname,
+      filePath: req.file.path,
+      fileType: req.file.mimetype,
+      fileSize: fileSizeFormatter(req.file.size, 2), // 0.00
+    });
+    await file.save();
+    const img = url.pathToFileURL(file.filePath)
     if (!postedBy || !text) {
       return res.status(400).json({
         message: "PostedBy and Text Fiels Are Required",
@@ -157,6 +167,18 @@ const getFeedPosts = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+const fileSizeFormatter = (bytes, decimal) => {
+  if (bytes === 0) {
+    return "0 Bytes";
+  }
+  const dm = decimal || 2;
+  const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "YB", "ZB"];
+  const index = Math.floor(Math.log(bytes) / Math.log(1000));
+  return (
+    parseFloat((bytes / Math.pow(1000, index)).toFixed(dm)) + " " + sizes[index]
+  );
+};
+
 module.exports = {
   createPost,
   getPost,

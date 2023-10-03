@@ -1,6 +1,7 @@
 const upload = require("../middlewares/upload");
 require("dotenv").config();
 
+const ImageFile = require("../models/image.model")
 const MongoClient = require("mongodb").MongoClient;
 const GridFSBucket = require("mongodb").GridFSBucket;
 
@@ -10,11 +11,37 @@ const baseUrl = `http://localhost:${process.env.PORT}/files/`;
 
 const mongoClient = new MongoClient(url);
 
+const fileSizeFormatter = (bytes, decimal) => {
+  if (bytes === 0) {
+    return "0 Bytes";
+  }
+  const dm = decimal || 2;
+  const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "YB", "ZB"];
+  const index = Math.floor(Math.log(bytes) / Math.log(1000));
+  return (
+    parseFloat((bytes / Math.pow(1000, index)).toFixed(dm)) + " " + sizes[index]
+  );
+};
+const singleFileUpload = async (req, res, next) => {
+  try {
+    const file = new ImageFile({
+      fileName: req.file.originalname,
+      filePath: req.file.path,
+      fileType: req.file.mimetype,
+      fileSize: fileSizeFormatter(req.file.size, 2), // 0.00
+    });
+    await file.save();
+    res.status(201).send({message: "File Uploaded Successfully", image: file});
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
+};
+
 const uploadFiles = async (req, res) => {
   try {
     console.log("Request: ",req.body);
 
-    await upload(req, res);
+    // await upload(req, res); 
     console.log(req.file);
 
     if (req.file == undefined) {
@@ -99,4 +126,5 @@ module.exports = {
   uploadFiles,
   getListFiles,
   download,
+  singleFileUpload,
 };

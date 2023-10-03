@@ -9,8 +9,8 @@ router.post("/login",userController.login);
 router.post("/logout",userController.logout);
 
 
-router.get("/profile", userController.getProfile);
-router.get("/profile/:username", userController.getUserProfile);
+router.get("/profile", validateUser, userController.getProfile);
+router.get("/profile/:username", validateUser, userController.getUserProfile);
 router.post("/follow/:id",validateUser,userController.followUnfollowUser);
 router.post("/update/:id",validateUser,userController.updateUser);
 
