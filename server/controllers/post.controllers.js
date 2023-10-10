@@ -1,20 +1,20 @@
-const upload = require("../middlewares/upload");
 const Post = require("../models/post.model");
 const User = require("../models/user.model");
 const ImageFile = require("../models/image.model");
-const url = require('url')
+require("dotenv").config();
+
 const createPost = async (req, res) => {
   try {
     const { text } = req.body;
     const postedBy = req.user._id;
     const file = new ImageFile({
-      fileName: req.file.originalname,
+      fileName: req.file.filename,
       filePath: req.file.path,
       fileType: req.file.mimetype,
       fileSize: fileSizeFormatter(req.file.size, 2), // 0.00
     });
     await file.save();
-    const img = url.pathToFileURL(file.filePath)
+    const img = [process.env.IMAGE_ASSETS_PATH, file.fileName].join('/');
     if (!postedBy || !text) {
       return res.status(400).json({
         message: "PostedBy and Text Fiels Are Required",
