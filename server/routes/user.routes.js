@@ -12,6 +12,7 @@ router.post("/logout",userController.logout);
 
 router.get("/profile", validateUser, userController.getProfile);
 router.get("/profile/:username", validateUser, userController.getUserProfile);
+router.get("/byId/:id", validateUser, userController.getUserProfileById);
 router.post("/follow/:id",validateUser,userController.followUnfollowUser);
 router.post("/update/user/:id", validateUser, userController.updateUser);
 router.post("/update/password/:id", validateUser, userController.updateUserPassword);

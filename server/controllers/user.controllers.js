@@ -261,6 +261,21 @@ const getUserProfile = async (req, res) => {
   }
 };
 
+const getUserProfileById = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const user = await User.findById(id)
+      .select("-password")
+      .select("-updatedAt");
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    res.status(200).json(user);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+    console.log("Error in getUserProfile: ", err.message);
+  }
+};
+
 module.exports = {
   signup,
   login,
@@ -270,5 +285,6 @@ module.exports = {
   getUserProfile,
   getProfile,
   updateUserProfilePic,
-  updateUserPassword
+  updateUserPassword,
+  getUserProfileById
 };
