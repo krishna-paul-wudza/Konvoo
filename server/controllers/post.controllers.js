@@ -1,6 +1,7 @@
 const Post = require("../models/post.model");
 const User = require("../models/user.model");
 const ImageFile = require("../models/image.model");
+const fileSizeFormatter = require('../util/fileSizeFormatter')
 require("dotenv").config();
 
 const createPost = async (req, res) => {
@@ -17,7 +18,7 @@ const createPost = async (req, res) => {
     const img = [process.env.IMAGE_ASSETS_PATH, file.fileName].join('/');
     if (!postedBy || !text) {
       return res.status(400).json({
-        message: "PostedBy and Text Fiels Are Required",
+        message: "PostedBy and Text Fields Are Required",
       });
     }
     const user = await User.findById(postedBy);
@@ -166,17 +167,6 @@ const getFeedPosts = async (req, res) => {
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
-};
-const fileSizeFormatter = (bytes, decimal) => {
-  if (bytes === 0) {
-    return "0 Bytes";
-  }
-  const dm = decimal || 2;
-  const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "YB", "ZB"];
-  const index = Math.floor(Math.log(bytes) / Math.log(1000));
-  return (
-    parseFloat((bytes / Math.pow(1000, index)).toFixed(dm)) + " " + sizes[index]
-  );
 };
 
 module.exports = {
