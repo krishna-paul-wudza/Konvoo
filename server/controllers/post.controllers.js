@@ -147,6 +147,21 @@ const getUserPosts = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 }
+const getUserPostsByUserId = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const feedPosts = await Post.find({ postedBy: userId }).sort({
+      createdAt: -1,
+    });
+    res.status(200).json({ feedPosts });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
 const getFeedPosts = async (req, res) => {
   try {
     const userId = req.user._id;
@@ -176,5 +191,6 @@ module.exports = {
   likeUnlikePost,
   replyToPost,
   getFeedPosts,
-  getUserPosts
+  getUserPosts,
+  getUserPostsByUserId,
 };

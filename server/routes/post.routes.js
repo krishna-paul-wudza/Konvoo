@@ -8,6 +8,7 @@ const router = express.Router();
 
 router.get("/get/:id",postController.getPost)
 router.get("/myPosts", validateUser, postController.getUserPosts);
+router.get("/userPosts/:id", validateUser, postController.getUserPostsByUserId);
 router.get("/feed", validateUser, postController.getFeedPosts);
 router.post("/create", validateUser, upload.single('img'), postController.createPost);
 router.post("/like/:id", validateUser, postController.likeUnlikePost);
